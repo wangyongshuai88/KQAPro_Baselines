@@ -5,7 +5,7 @@ from utils.misc import invert_dict
 
 def load_vocab(path):
     vocab = json.load(open(path))
-    vocab['answer_idx_to_token'] = invert_dict(vocab['answer_token_to_idx'])
+    vocab['answer_idx_to_token'] = invert_dict(vocab['answer_token_to_idx'])   #invert_dict 用来转换字典的键值。 vocab 是一个字典里面嵌套一个字典。vocab['answer_token_to_idx'] 和vocab['answer_idx_to_token']是两个字典。
     return vocab
 
 def collate(batch):
@@ -45,15 +45,15 @@ class Dataset(torch.utils.data.Dataset):
 
 
 class DataLoader(torch.utils.data.DataLoader):
-    def __init__(self, vocab_json, question_pt, batch_size, training=False):
-        vocab = load_vocab(vocab_json)
+    def __init__(self, vocab_json, question_pt, batch_size, training=False):   #传入的是  vocab_json是字典，训练的pt类型二进制文件地址，
+        vocab = load_vocab(vocab_json) #vocab['answer_token_to_idx'] 和vocab['answer_idx_to_token']是两个字典。
         if training:
             print('#vocab of answer: %d' % (len(vocab['answer_token_to_idx'])))
         
         inputs = []
         with open(question_pt, 'rb') as f:
             for _ in range(5):
-                inputs.append(pickle.load(f))
+                inputs.append(pickle.load(f)) #   print(type(inputs[0]))   得到 <class 'numpy.ndarray'>
         dataset = Dataset(inputs)
 
         super().__init__(

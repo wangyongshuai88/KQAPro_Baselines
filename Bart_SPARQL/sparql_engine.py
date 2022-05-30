@@ -1,3 +1,6 @@
+# 可以用来把json 转成ttl格式的，为了可以导入virtuoso中。
+# 也可以用来调用virtuoso 。这是一个引擎。
+
 import rdflib
 from rdflib import URIRef, BNode, Literal, XSD
 from rdflib.plugins.stores import sparqlstore
@@ -9,8 +12,8 @@ from utils.load_kb import DataForSPARQL
 from utils.value_class import ValueClass
 
 
-virtuoso_address = "http://10.1.1.33:8890/sparql"
-virtuoso_graph_uri = 'sjx'
+virtuoso_address = "http://127.0.0.1:8890/sparql"
+virtuoso_graph_uri = 'KQAPro'
 
 
 def legal(s):

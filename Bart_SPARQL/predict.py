@@ -203,7 +203,7 @@ def train(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     logging.info("Create train_loader and val_loader.........")
-    vocab_json = os.path.join(args.input_dir, 'vocab.json')
+    vocab_json = os.path.join(args.input_dir, 'vocab.json')  #这是个字典 格式是   词语：序号
     train_pt = os.path.join(args.input_dir, 'train.pt')
     val_pt = os.path.join(args.input_dir, 'val.pt')
     train_loader = DataLoader(vocab_json, train_pt, args.batch_size, training=True)
@@ -245,7 +245,7 @@ def main():
     fileHandler = logging.FileHandler(os.path.join(args.save_dir, '{}.predict.log'.format(time_)))
     fileHandler.setFormatter(logFormatter)
     rootLogger.addHandler(fileHandler)
-    # args display
+    # args display  首先把参数都打印到日志里去。
     for k, v in vars(args).items():
         logging.info(k+':'+str(v))
 

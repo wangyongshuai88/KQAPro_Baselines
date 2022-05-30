@@ -1,3 +1,7 @@
+# 该程序是对数据进行数据预处理的。
+#python -m Bart_SPARQL.preprocess --input_dir ./dataset --output_dir <dir/of/processed/files> --model_name_or_path <dir/of/pretrained/BartModel>
+# cp ./dataset/kb.json <dir/of/processed/files>
+ # 使用该数据集可以做选择题，也可以做问答题。
 import os
 import json
 import pickle
@@ -61,6 +65,7 @@ def encode_dataset(dataset, vocab, tokenizer, test = False):
 
 
 def main():
+    #python -m Bart_SPARQL.preprocess --input_dir ./dataset --output_dir <dir/of/processed/files> --model_name_or_path <dir/of/pretrained/BartModel>
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_dir', required=True)
     parser.add_argument('--output_dir', required=True)
@@ -72,12 +77,12 @@ def main():
         'answer_token_to_idx': {}
     }
     print('Load questions')
-    train_set = json.load(open(os.path.join(args.input_dir, 'train.json')))
+    train_set = json.load(open(os.path.join(args.input_dir, 'train.json')))   # trainset 和val_set 是个list，list的元素是dict ,每个dict 有5个 key['question', 'choices', 'program', 'sparql', 'answer']，但是 testset里面只有['question', 'choices'])
     val_set = json.load(open(os.path.join(args.input_dir, 'val.json')))
     test_set = json.load(open(os.path.join(args.input_dir, 'test.json')))
-    for question in chain(train_set, val_set, test_set):
+    for question in chain(train_set, val_set, test_set):           
         for a in question['choices']:
-            if not a in vocab['answer_token_to_idx']:
+            if not a in vocab['answer_token_to_idx']:   #查找选项的答案是否在 词典库中。 如果不在，则补充词典库。这里还是数据预处理。
                 vocab['answer_token_to_idx'][a] = len(vocab['answer_token_to_idx'])
 
     if not os.path.isdir(args.output_dir):

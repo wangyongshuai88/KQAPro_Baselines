@@ -1,3 +1,6 @@
+运行方法要在本目录，直接使用 python -m Bart_SPARQL.pridict   来运行，才能不出错。
+
+
 # KQA Pro Baselines
 [KQA Pro](https://arxiv.org/abs/2007.03875) is a large-scale dataset of complex question answering over knowledge base, which provides strong supervision of SPARQL and program for each question. 
 [Here is its homepage website](http://thukeg.gitee.io/kqa-pro/).
