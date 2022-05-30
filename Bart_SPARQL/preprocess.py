@@ -18,13 +18,13 @@ from transformers import *
 
 
 
-def encode_dataset(dataset, vocab, tokenizer, test = False):
+def encode_dataset(dataset, vocab, tokenizer, test = False):    #dataset 如果是  trainset 和val_set 是个list，list的元素是dict ,每个dict 有5个 key['question', 'choices', 'program', 'sparql', 'answer']，但是 testset里面只有['question', 'choices'])
     questions = []
     sparqls = []
     for item in tqdm(dataset):
         question = item['question']
         questions.append(question)
-        if not test:
+        if not test:       #test 数据集没有spartql
             sparql = item['sparql']
             sparqls.append(sparql)
     sequences = questions + sparqls
@@ -93,7 +93,7 @@ def main():
         json.dump(vocab, f, indent=2)
     for k in vocab:
         print('{}:{}'.format(k, len(vocab[k])))
-    tokenizer = BartTokenizer.from_pretrained(args.model_name_or_path)
+    tokenizer = BartTokenizer.from_pretrained(args.model_name_or_path)   # 用来把文本进行切分，然后把词语或者短语 翻译成预训练模型对应的序号。
     for name, dataset in zip(('train', 'val', 'test'), (train_set, val_set, test_set)):
         print('Encode {} set'.format(name))
         outputs = encode_dataset(dataset, vocab, tokenizer, name=='test')
