@@ -10,7 +10,7 @@ from datetime import date
 from utils.misc import MetricLogger, seed_everything, ProgressBar
 from utils.load_kb import DataForSPARQL
 from .data import DataLoader
-from transformers import BartConfig, BartForConditionalGeneration, BartTokenizer
+from transformers import BartConfig, BartForConditionalGeneration, BartTokenizer   #直接导入三个模型。
 from .sparql_engine import get_sparql_answer
 import torch.optim as optim
 import logging
@@ -204,11 +204,11 @@ def train(args):
 
     logging.info("Create train_loader and val_loader.........")
     vocab_json = os.path.join(args.input_dir, 'vocab.json')  #这是个字典 格式是   词语：序号
-    train_pt = os.path.join(args.input_dir, 'train.pt')
-    val_pt = os.path.join(args.input_dir, 'val.pt')
+    train_pt = os.path.join(args.input_dir, 'train.pt')    # 这是在数据预处理中，使用bart的tokentizer 处理好的对象存储  含 #source_ids 已经encode, source_mask 对应的mask, target_ids encode了的sparql, choices, answers  ，但是问题是为什么target 没有mask
+    val_pt = os.path.join(args.input_dir, 'val.pt') # 这是在数据预处理中，使用bart的tokentizer 处理好的对象存储，并且里面 #source_ids 已经encode, source_mask 对应的mask, target_ids encode了的sparql, choices, answers  ，但是问题是为什么target 没有mask
     train_loader = DataLoader(vocab_json, train_pt, args.batch_size, training=True)
     val_loader = DataLoader(vocab_json, val_pt, args.batch_size)
-    vocab = train_loader.vocab
+    vocab = train_loader.vocab   #####这个东西为什么要套进dataloader里面去？
     kb = DataForSPARQL(os.path.join(args.input_dir, 'kb.json'))
     logging.info("Create model.........")
     config_class, model_class, tokenizer_class = (BartConfig, BartForConditionalGeneration, BartTokenizer)
