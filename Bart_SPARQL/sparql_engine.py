@@ -165,7 +165,7 @@ def get_sparql_answer(sparql, data):
         else:
             tokens = sparql.split()
             tgt = tokens[2]
-            for i in range(len(tokens)-1, 1, -1):
+            for i in range(len(tokens)-1, 1, -1):   #王永帅备注：倒序
                 if tokens[i]=='.' and tokens[i-1]==tgt:
                     key = tokens[i-2]
                     break

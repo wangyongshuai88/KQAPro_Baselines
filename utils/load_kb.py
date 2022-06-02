@@ -205,27 +205,27 @@ def load_as_key_value(kb_json, min_cnt=1):
 class DataForSPARQL(object):
     def __init__(self, kb_path):
         kb = json.load(open(kb_path))
-        self.concepts = kb['concepts']
-        self.entities = kb['entities']
+        self.concepts = kb['concepts'] #concept 是一个字典， key是一个编号，对应的内容是一个字典{name：instanceOf}   表达的是抽象概念之间的关系。
+        self.entities = kb['entities']# entity 是concept的实例化内容， key 是一个编号，  对应内容是一个字典。 {name， instanceof，attribute，relations}  其中attribute,relations  是一个list.  这两个list 的内容都是字典。attribute的内容是属性名称：属性值（属性值的类型和值），修饰（时间信息，统计方法）：{'key': 'total fertility rate', 'value': {'type': 'quantity', 'value': 2.926, 'unit': '1'}, 'qualifiers': {'point in time': [{'type': 'year', 'value': 1999}], 'determination method': [{'type': 'string', 'value': 'estimation process'}]}}
 
         # replace adjacent space and tab in name, which may cause errors when building sparql query
         for con_id, con_info in self.concepts.items():
-            con_info['name'] = ' '.join(con_info['name'].split())
+            con_info['name'] = ' '.join(con_info['name'].split())  #用空格重新替换一次分隔符。防止有连续的空格或者tab或者\n
         for ent_id, ent_info in self.entities.items():
             ent_info['name'] = ' '.join(ent_info['name'].split())
 
         # get all attribute keys and predicates
-        self.attribute_keys = set()
-        self.predicates = set()
-        self.key_type = {}
+        self.attribute_keys = set()  # 收集实体的属性key  以及属性的属性key
+        self.predicates = set()   # 收集实体的关系词
+        self.key_type = {} # 收集实体的属性key的类型 以及属性的属性type
         for ent_id, ent_info in self.entities.items():
             for attr_info in ent_info['attributes']:
                 self.attribute_keys.add(attr_info['key'])
                 self.key_type[attr_info['key']] = attr_info['value']['type']
                 for qk in attr_info['qualifiers']:
-                    self.attribute_keys.add(qk)
+                    self.attribute_keys.add(qk)    # 收集属性的属性key
                     for qv in attr_info['qualifiers'][qk]:
-                        self.key_type[qk] = qv['type']
+                        self.key_type[qk] = qv['type']  # 收集属性的属性type
         for ent_id, ent_info in self.entities.items():
             for rel_info in ent_info['relations']:
                 self.predicates.add(rel_info['predicate'])
@@ -234,11 +234,11 @@ class DataForSPARQL(object):
                     for qv in rel_info['qualifiers'][qk]:
                         self.key_type[qk] = qv['type']
         self.attribute_keys = list(self.attribute_keys)
-        self.predicates = list(self.predicates)
+        self.predicates = list(self.predicates) 
         # Note: key_type is one of string/quantity/date, but date means the key may have values of type year
-        self.key_type = { k:v if v!='year' else 'date' for k,v in self.key_type.items() }
+        self.key_type = { k:v if v!='year' else 'date' for k,v in self.key_type.items() }   #把year 换成 date类型
 
-        # parse values into ValueClass object
+        # parse values into ValueClass object   # 为了方便比较大小
         for ent_id, ent_info in self.entities.items():
             for attr_info in ent_info['attributes']:
                 attr_info['value'] = self._parse_value(attr_info['value'])
@@ -252,7 +252,7 @@ class DataForSPARQL(object):
     def _parse_value(self, value):
         if value['type'] == 'date':
             x = value['value']
-            p1, p2 = x.find('/'), x.rfind('/')
+            p1, p2 = x.find('/'), x.rfind('/')  # 找到第一个和 最后一个/
             y, m, d = int(x[:p1]), int(x[p1+1:p2]), int(x[p2+1:])
             result = ValueClass('date', date(y, m, d))
         elif value['type'] == 'year':

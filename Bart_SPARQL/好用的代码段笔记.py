@@ -83,3 +83,7 @@ print(g.send(7))   # 会把 7传给单步调试的中断点，
 # collate_fn 会被这个样调用，就是训练的时候，sample一个batch 出来以后，，通过这个函数在进行一次处理。
 for indices in batch_sampler:
     yield collate_fn([dataset[i] for i in indices])
+
+
+# 字符串前加 r 可以避免转义
+# 字符串前加 r 可以在大括号里写变量
