@@ -1,0 +1,5 @@
+解决问题记录：
+virtuoso第一次安装好以后，可以正常使用，第二天发现无法启动而且提示：There is no configuration file virtuoso.ini
+于是找了好多资料，终于发现可以通过在 /etc/rc.conf 中增加virtuoso.ini的地址
+例如我的地址如下：
+virtuoso_config="/usr/local/lib/virtuoso/db/virtuoso.ini"

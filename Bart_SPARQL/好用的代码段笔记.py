@@ -87,3 +87,7 @@ for indices in batch_sampler:
 
 # 字符串前加 r 可以避免转义
 # 字符串前加 r 可以在大括号里写变量
+
+
+# 如果查出来是node类型，那么需要用这个语句再查一遍。SELECT DISTINCT ?v WHERE { <nodeID://b229392> <pred:value> ?v .  }
+# 此类任务，每次需要2个sparql 来进行得到答案，第一个sparql得到一个节点，然后第二个sparql 根据节点得到最终的值和单位

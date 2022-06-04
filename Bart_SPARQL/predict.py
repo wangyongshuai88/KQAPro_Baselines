@@ -87,8 +87,10 @@ def whether_equal(answer, pred):
 #     print(text)
 #     return text
 
+
+# 其实就是为了把sparql 中除了”“里面的 ？和.前面都加一个空格
 def post_process(text):
-    pattern = re.compile(r'".*?"')
+    pattern = re.compile(r'".*?"')  # 匹配双引号，*？会使匹配时使用非贪婪模式，也就是会匹配到尽可能短的双引号。
     nes = []
     for item in pattern.finditer(text):
         nes.append((item.group(), item.span()))
@@ -141,19 +143,21 @@ def validate(args, kb, model, data, device, tokenizer):
             # break
         outputs = [tokenizer.decode(output_id, skip_special_tokens = True, clean_up_tokenization_spaces = True) for output_id in all_outputs]
         print(outputs)
-        pred_sparql = [post_process(output) for output in outputs]
+        pred_sparql = [post_process(output) for output in outputs]  # 其实就是为了把sparql 中除了”“里面的 ？和.前面都加一个空格
         given_answer = [data.vocab['answer_idx_to_token'][a] for a in all_answers]
         # print(outputs)
         res = []
         for a, s in tqdm(zip(given_answer, pred_sparql)):
             pred_answer = get_sparql_answer(s, kb)
-            print(s)
-            print(pred_answer)
-            print(a)
+            logging.info(f'执行的sparql: {s}得到的答案是{pred_answer}正确答案是{a}') 
+            # print(s)
+            # print(pred_answer)
+            # print(a)
             res.append({'pred_sparql': s, 'pred_ans': pred_answer, 'gold_ans': a, 'is_correct': pred_sparql == a})
             is_match = whether_equal(a, pred_answer)
             if is_match:
                 correct += 1
+                logging.info(f'有用的sparql: {s}')
             count += 1
         json.dump(res, open('pred_sparql.json', 'w'))
     acc = correct / count

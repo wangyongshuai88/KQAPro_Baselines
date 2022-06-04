@@ -143,7 +143,9 @@ def query_virtuoso(q):
     gs = rdflib.ConjunctiveGraph(store)
     gs.open((endpoint, endpoint))
     gs1 = gs.get_context(rdflib.URIRef(virtuoso_graph_uri))
+    #print(f"最终发送了查询{q}")
     res = gs1.query(q)
+    #print(f"得到了结果{res}")
     return res
 
 
@@ -162,24 +164,24 @@ def get_sparql_answer(sparql, data):
             parse_type = 'pred'
         elif sparql.startswith('ASK'):
             parse_type = 'bool'
-        else:
+        else:  #'其余2种问题的taget都是在第三个位置：?qpv'qualifiers的<pred:value>, '?pv'<pred:value>
             tokens = sparql.split()
-            tgt = tokens[2]
+            tgt = tokens[2]   #其他的难道都是 target 在sparql 的第三个吗？
             for i in range(len(tokens)-1, 1, -1):   #王永帅备注：倒序
                 if tokens[i]=='.' and tokens[i-1]==tgt:
                     key = tokens[i-2]
                     break
-            key = key[1:-1].replace('_', ' ')
+            key = key[1:-1].replace('_', ' ')   #把下划线替换成空格   这是由于kb.json里面predict里是空格分隔。而在  trainset 以及validset 以及在virtuoso中都是用的下划线分割。
             t = data.key_type[key]
             parse_type = 'attr_{}'.format(t)
 
         parsed_answer = None
         res = query_virtuoso(sparql)
-        if res.vars:
-            res = [[binding[v] for v in res.vars] for binding in res.bindings]
-            if len(res) != 1:
+        if res.vars:   #因为返回来的可能是一个二维的表格，vars 就代表了查询的变量，也就是列，bindings 就代表行。
+            res = [[binding[v] for v in res.vars] for binding in res.bindings] #得到一个二维数组
+            if len(res) != 1:     # 这里要求必须只能返回一行结果，那么意味着不能回答集合问题？看下是否能回答时间问题？自己根据知识库可以想一些问题进行实验。
                 return None
-        else:
+        else:     # 如果没有变量，那么判断下是不是判断题，如果是判断题的话：
             res = res.askAnswer
             assert parse_type == 'bool'
         

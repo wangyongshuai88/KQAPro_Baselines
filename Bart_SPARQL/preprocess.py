@@ -100,6 +100,10 @@ def main():
     print('Load questions')
     train_set = json.load(open(os.path.join(args.input_dir, 'train.json')))   # trainset 和val_set 是个list，list的元素是dict ,每个dict 有5个 key['question', 'choices', 'program', 'sparql', 'answer']，但是 testset里面只有['question', 'choices'])
     val_set = json.load(open(os.path.join(args.input_dir, 'val.json')))
+    # 王永帅增加下
+    train_set=train_set[10:30]     # 王永帅增加：为了减少运行负担 
+    val_set=val_set[10:30]    # 王永帅增加：为了减少运行负担 
+    # 王永帅增加↑
     test_set = json.load(open(os.path.join(args.input_dir, 'test.json')))
     for question in chain(train_set, val_set, test_set):           
         for a in question['choices']:
