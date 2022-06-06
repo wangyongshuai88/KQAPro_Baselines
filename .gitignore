@@ -2,6 +2,9 @@
 *.sublime-project
 test_dataset/
 dataset/
+Bart_SPARQL/ckpt/
+Bart_SPARQL/myckpt/
+Bart_SPARQL/unfinetunedbart/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
